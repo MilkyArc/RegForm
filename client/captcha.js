@@ -1,10 +1,5 @@
 document.addEventListener('DOMContentLoaded', loadCaptcha);
 
-if (typeof document === 'undefined') {
-    console.error('Error loading CAPTCHA: This function is not designed to run in a Node.js environment.');
-    return;
-  }
-
 async function loadCaptcha() {
     try {
         const response = await fetch('http://localhost:3000/captcha');
