@@ -2,7 +2,7 @@ const http = require('http');
 const url = require('url');
 const { connectToDatabase } = require('./db');
 const { handleRequest } = require('./routes');
-r
+
 connectToDatabase((err) => {
   if (err) {
     console.error('Failed to connect to the database. Exiting.');

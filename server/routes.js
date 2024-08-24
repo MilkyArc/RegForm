@@ -7,7 +7,6 @@ const { handleChangeName, handleChangePassword } = require('./changeUserData');
 const { parseCookies } = require('./utils');
 const { getSession, isValidSession, serveCaptcha } = require('./session');
 
-
 function handleRequest(req, res, pathName) {
     const cookies = parseCookies(req);
     const sessionId = cookies.sessionId;
@@ -29,8 +28,14 @@ function handleRequest(req, res, pathName) {
         }
     } else if (pathName === '/styles.css' && req.method === 'GET') {
         serveStaticFile(res, path.join(__dirname, '../client/styles.css'), 'text/css');
-    } else if (pathName === '/script.js' && req.method === 'GET') {
-        serveStaticFile(res, path.join(__dirname, '../client/script.js'), 'application/javascript');
+    } else if (pathName === '/auth.js' && req.method === 'GET') {
+        serveStaticFile(res, path.join(__dirname, '../client/auth.js'), 'application/javascript');
+    } else if (pathName === '/captcha.js' && req.method === 'GET') {
+        serveStaticFile(res, path.join(__dirname, '../client/captcha.js'), 'application/javascript');
+    } else if (pathName === '/formValidation.js' && req.method === 'GET') {
+        serveStaticFile(res, path.join(__dirname, '../client/formValidation.js'), 'application/javascript');
+    } else if (pathName === '/userProfile.js' && req.method === 'GET') {
+        serveStaticFile(res, path.join(__dirname, '../client/userProfile.js'), 'application/javascript');
     } else if (pathName === '/register' && req.method === 'POST') {
         handleRegistration(req, res);
     } else if (pathName === '/login' && req.method === 'POST') {
