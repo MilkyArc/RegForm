@@ -10,7 +10,7 @@ function handleLogin(req, res) {
 
     req.on('end', () => {
         try {
-            console.log('Received body:', body); 
+            //console.log('Received body:', body); 
             const data = JSON.parse(body); 
 
             
@@ -61,7 +61,7 @@ function handleLogin(req, res) {
                 }
             });
         } catch (parseError) {
-            console.error('JSON parsing error:', parseError.message); 
+           // console.error('JSON parsing error:', parseError.message); 
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid JSON data' })); 
         }

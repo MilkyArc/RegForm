@@ -1,12 +1,13 @@
 const fs = require('fs');
 
 function parseCookies(request) {
-  return request.headers.cookie?.split(';').reduce((acc, cookie) => {
-    const [key, value] = cookie.trim().split('=');
-    acc[key] = value;
-    return acc;
+  return request.headers?.cookie?.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      acc[key] = value;
+      return acc;
   }, {}) || {};
 }
+
 
 function serveStaticFile(res, filePath, contentType) {
   fs.readFile(filePath, (err, data) => {

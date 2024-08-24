@@ -4,16 +4,6 @@ const { parseCookies } = require('./utils');
 let sessions = {}; 
 let captchaChallenges = {};  
 
-module.exports = {
-    sessions,
-    captchaChallenges,
-    generateSessionId,
-    getSession,
-    isValidSession,
-    generateCaptcha,
-    serveCaptcha
-};
-
 
 function generateSessionId() {
     return crypto.randomBytes(16).toString('hex');
@@ -64,3 +54,13 @@ function serveCaptcha(req, res) {
     });
     res.end(JSON.stringify({ question: captcha.question }));
 }
+
+module.exports = {
+    sessions,
+    captchaChallenges,
+    generateSessionId,
+    getSession,
+    isValidSession,
+    generateCaptcha,
+    serveCaptcha
+};

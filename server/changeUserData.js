@@ -12,7 +12,7 @@ function handleChangeName(req, res) {
 
     req.on('end', () => {
         try {
-            console.log('Received body for name change:', body); 
+          //  console.log('Received body for name change:', body); 
             const data = JSON.parse(body); 
             const sessionId = parseCookies(req).sessionId;
             const userSession = sessions[sessionId];
@@ -49,7 +49,7 @@ function handleChangeName(req, res) {
                 });
             });
         } catch (parseError) {
-            console.error('JSON parsing error for name change:', parseError.message); 
+           // console.error('JSON parsing error for name change:', parseError.message); 
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid JSON data' })); 
         }
@@ -64,7 +64,7 @@ function handleChangePassword(req, res) {
 
     req.on('end', () => {
         try {
-            console.log('Received body for password change:', body); 
+           // console.log('Received body for password change:', body); 
             const data = JSON.parse(body); 
             const sessionId = parseCookies(req).sessionId;
             const userSession = sessions[sessionId];
@@ -108,7 +108,7 @@ function handleChangePassword(req, res) {
                 });
             });
         } catch (parseError) {
-            console.error('JSON parsing error for password change:', parseError.message); 
+           // console.error('JSON parsing error for password change:', parseError.message); 
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'Invalid JSON data' })); 
         }

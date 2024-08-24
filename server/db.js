@@ -60,5 +60,5 @@ module.exports = {
     registerUser,
     updateUserName,
     updateUserPassword,
-    connection
+    connection,
 };
