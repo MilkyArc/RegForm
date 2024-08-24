@@ -10,24 +10,22 @@
     <div class="container">
         <h1>Login</h1>
         <form id="loginForm" method="POST" novalidate>
-
             <label for="loginEmail">Email</label>
             <input type="email" id="loginEmail" name="email" placeholder="Email" required />
-            <span class="error-message" id="loginEmailError"></span>
+            <span class="error-message" id="loginEmailError"></span> 
 
             <label for="loginPassword">Password</label>
             <input type="password" id="loginPassword" name="password" placeholder="Password" required />
-            <span class="error-message" id="loginPasswordError"></span>
+            <span class="error-message" id="loginPasswordError"></span> 
 
-            
             <label for="captcha">Captcha</label>
             <div id="captchaQuestion">Loading CAPTCHA...</div>
             <input type="text" id="captchaResponse" name="captchaResponse" placeholder="Enter CAPTCHA result" required />
-            <span class="error-message" id="captchaError"></span>
+            <span class="error-message" id="captchaError"></span> 
 
             <button type="submit">Login</button>
         </form>
-        <p>Don't have an account? <a href="register.html">Register</a></p>
+        <p class="additional-text">Don't have an account? <a href="register.html">Register</a></p>
     </div>
     <script src="captcha.js"></script>
     <script src="formValidation.js"></script>
