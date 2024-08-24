@@ -5,21 +5,21 @@ document.getElementById('loginForm')?.addEventListener('submit', handleLogin);
 document.getElementById('logoutButton')?.addEventListener('click', handleLogout);
 
 async function handleRegister(e) {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); 
     const form = e.target;
 
     if (!validateRegistrationForm(form)) return;
 
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData); // Converts FormData to a plain object
+    const data = Object.fromEntries(formData); 
 
     try {
         const response = await fetch('http://localhost:3000/register', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json', // Ensure JSON format
+                'Content-Type': 'application/json', 
             },
-            body: JSON.stringify(data), // Stringify data for JSON format
+            body: JSON.stringify(data), 
         });
 
         const result = await response.json();
@@ -36,21 +36,21 @@ async function handleRegister(e) {
 }
 
 async function handleLogin(e) {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); 
     const form = e.target;
 
     if (!validateLoginForm(form)) return;
 
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData); // Convert form data to a plain object
+    const data = Object.fromEntries(formData); 
 
     try {
         const response = await fetch('http://localhost:3000/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json', // Ensure JSON format
+                'Content-Type': 'application/json', 
             },
-            body: JSON.stringify(data), // Convert the data object to JSON string
+            body: JSON.stringify(data), 
         });
 
         const result = await response.json();
