@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="styles.css"> 
+</head>
+<body>
+    <div class="container">
+        <h1>Register</h1>
+        <form id="registerForm" method="POST" novalidate> 
+            
+            <label for="firstName">First Name</label>
+            <input type="text" id="firstName" name="firstName" placeholder="First Name" required />
+            <span class="error-message" id="firstNameError"></span>
+
+            <label for="lastName">Last Name</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Last Name" required />
+            <span class="error-message" id="lastNameError"></span>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Email" required />
+            <span class="error-message" id="emailError"></span>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Password" required minlength="6" />
+            <span class="error-message" id="passwordError"></span>
+
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+            <span class="error-message" id="confirmPasswordError"></span>
+
+            <!-- CAPTCHA -->
+            <label for="captcha">Captcha</label>
+            <div id="captchaQuestion">Loading CAPTCHA...</div>
+            <input type="text" id="captchaResponse" name="captchaResponse" placeholder="Enter CAPTCHA result" required />
+            <span class="error-message" id="captchaError"></span>
+
+            <button type="submit">Register</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+    <script src="script.js"></script> 
+</body>
+</html>

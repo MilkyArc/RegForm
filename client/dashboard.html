@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Your Dashboard</h1>
+
+        <form id="changeNameForm">
+            <h2>Change Name</h2>
+            <label for="firstName">New First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
+            <label for="lastName">New Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+            <label for="passwordForNameChange">Current Password:</label>
+            <input type="password" id="passwordForNameChange" name="passwordForNameChange" required>
+            <button type="submit">Change Name</button>
+            <span id="changeNameError" class="error-message"></span>
+        </form>
+
+        <form id="changePasswordForm">
+            <h2>Change Password</h2>
+            <label for="currentPassword">Current Password:</label>
+            <input type="password" id="currentPassword" name="currentPassword" required>
+            <label for="newPassword">New Password:</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+            <label for="confirmNewPassword">Confirm New Password:</label>
+            <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+            <button type="submit">Change Password</button>
+            <span id="changePasswordError" class="error-message"></span>
+        </form>
+
+        <button id="logoutButton">Logout</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
