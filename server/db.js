@@ -1,10 +1,13 @@
+require('dotenv').config({ path: '../env/.env' });
+
 const mysql = require('mysql');
 
+
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'reguser',
-    password: 'password',
-    database: 'registration'
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
 function connectToDatabase(callback) {
@@ -27,7 +30,6 @@ function findUserByEmail(email, callback) {
         callback(null, results[0]);
     });
 }
-
 
 function registerUser(userData, callback) {
     const query = 'INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)';
