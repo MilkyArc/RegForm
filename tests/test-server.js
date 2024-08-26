@@ -39,7 +39,7 @@ function createMockRequest(ip) {
 }
 //Mock data for testing
 const mockUser = {
-    email: 'test@unittest.com',
+    email: 'test@unittest.persist',
     password: 'password123',
     firstName: 'John',
     lastName: 'Doe'
@@ -175,14 +175,14 @@ function testGenerateSessionId() {
 
 // Test for getSession function
 function testGetSession() {
-    sessions['testSessionId'] = { userId: 1, email: 'test@example.com' };
+    sessions['testSessionId'] = { userId: 1, email: 'test@unittest.com' };
     const session = getSession('testSessionId');
-    logResult('testGetSession', session && session.email === 'test@example.com');
+    logResult('testGetSession', session && session.email === 'test@unittest.com');
 }
 
 // Test for isValidSession function
 function testIsValidSession() {
-    sessions['testSessionId'] = { userId: 1, email: 'test@example.com' };
+    sessions['testSessionId'] = { userId: 1, email: 'test@unittest.com' };
     const isValid = isValidSession('testSessionId');
     logResult('testIsValidSession', isValid === true);
 }
@@ -257,7 +257,7 @@ function testHandleRequest() {
 //Test for handleUserDetailss function 
 function testHandleUserDetails() {
     const sessionId = generateSessionId();
-    sessions[sessionId] = { firstName: 'Pesho', lastName: 'Peshev', email: 'test@example.com' };
+    sessions[sessionId] = { firstName: 'Pesho', lastName: 'Peshev', email: 'test@unittest.com' };
 
     const mockReq = {
         headers: { cookie: `sessionId=${sessionId}` },
