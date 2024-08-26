@@ -15,7 +15,7 @@ function handleRequest(req, res, pathName) {
     const userSession = getSession(sessionId);
 
     if (pathName === '/' && req.method === 'GET') {
-        serveStaticFile(res, path.join(__dirname, '../client/register.html'), 'text/html');
+        serveStaticFile(res, path.join(__dirname, '../client/login.html'), 'text/html');
     } else if (pathName === '/register.html' && req.method === 'GET') {
         serveStaticFile(res, path.join(__dirname, '../client/register.html'), 'text/html');
     } else if (pathName === '/login.html' && req.method === 'GET') {
