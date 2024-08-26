@@ -1,4 +1,4 @@
-const { hashPassword, verifyUser } = require('../server/authUtils');
+const { hashPassword, verifyUser, handleUserDetails } = require('../server/authUtils');
 const { connectToDatabase, findUserByEmail, registerUser, updateUserName, updateUserPassword, connection } = require('../server/db');
 const { handleLogin } = require('../server/login');
 const { handleLogout } = require('../server/logout');
@@ -231,10 +231,28 @@ function testValidatePasswordChangeData() {
     });
 }
 
+
 function testHandleRequest() {
     const mockReq = { method: 'GET', url: '/', headers: {} }; // Ensure headers are defined
     handleRequest(mockReq, mockRes, '/');
     logResult('testHandleRequest', mockRes.statusCode === 200 || mockRes.statusCode === 302 || mockRes.statusCode === 404);
+}
+
+
+//Test for handleUserDetailss function 
+function testHandleUserDetails() {
+    const sessionId = generateSessionId();
+    sessions[sessionId] = { firstName: 'Pesho', lastName: 'Peshev', email: 'test@example.com' };
+
+    const mockReq = {
+        headers: { cookie: `sessionId=${sessionId}` },
+        method: 'GET'
+    };
+
+    handleUserDetails(mockReq, mockRes);
+    const data = JSON.parse(mockRes.data);
+
+    logResult('testHandleUserDetails', mockRes.statusCode === 200 && data.firstName === 'Pesho' && data.lastName === 'Peshev');
 }
 
 function runTests() {
@@ -255,6 +273,7 @@ function runTests() {
     testValidateNameChangeData();
     testValidatePasswordChangeData();
     testHandleRequest();
+    testHandleUserDetails();
    
     testConnectToDatabase(() => {
         testFindUserByEmail();
