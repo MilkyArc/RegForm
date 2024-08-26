@@ -1,3 +1,7 @@
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const nameRegex = /^[A-ZА-ЯЁ][a-zA-Zа-яА-ЯёЁ-]*$/; // Starts with uppercase, allows hyphens and Cyrillic chars
+const passwordRegex = /^.{6,64}$/; // length between 6 and 64 chars
+
 function clearErrors() {
     document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
 }
@@ -13,26 +17,26 @@ function validateRegistrationForm(form) {
     if (!form.firstName.value.trim()) {
         showError('firstNameError', 'First Name is required');
         isValid = false;
-    } else if (form.firstName.value.trim().length < 2) {
-        showError('firstNameError', 'First Name must be at least 2 characters long');
+    } else if (!nameRegex.test(form.firstName.value.trim())) {
+        showError('firstNameError', 'First Name must start with an uppercase letter and contain only letters and hyphens');
         isValid = false;
     }
 
     if (!form.lastName.value.trim()) {
         showError('lastNameError', 'Last Name is required');
         isValid = false;
-    } else if (form.lastName.value.trim().length < 2) {
-        showError('lastNameError', 'Last Name must be at least 2 characters long');
+    } else if (!nameRegex.test(form.lastName.value.trim())) {
+        showError('lastNameError', 'Last Name must start with an uppercase letter and contain only letters and hyphens');
         isValid = false;
     }
 
-    if (!form.email.validity.valid) {
+    if (!emailRegex.test(form.email.value.trim())) {
         showError('emailError', 'Invalid email address');
         isValid = false;
     }
 
-    if (!form.password.validity.valid || form.password.value.trim().length < 6) {
-        showError('passwordError', 'Password must be at least 6 characters long');
+    if (!passwordRegex.test(form.password.value.trim())) {
+        showError('passwordError', 'Password must be between 6 and 64 characters long');
         isValid = false;
     }
 
@@ -53,18 +57,15 @@ function validateLoginForm(form) {
     let isValid = true;
     clearErrors();
 
-
-    if (!form.email.validity.valid || !form.email.value.trim()) {
-        showError('loginEmailError', 'Email is required');
+    if (!emailRegex.test(form.email.value.trim())) {
+        showError('loginEmailError', 'Invalid email address');
         isValid = false;
     }
-
 
     if (!form.password.value.trim()) {
         showError('loginPasswordError', 'Password is required');
         isValid = false;
     }
-
 
     if (!form.captchaResponse.value.trim()) {
         showError('captchaError', 'Captcha is required');
@@ -74,24 +75,22 @@ function validateLoginForm(form) {
     return isValid;
 }
 
-
 function validateNameChangeForm(data) {
-    if (data.firstName.length < 2 || data.lastName.length < 2) {
-        document.getElementById('changeNameError').textContent = 'Names must be at least 2 characters long';
+    if (!nameRegex.test(data.firstName) || !nameRegex.test(data.lastName)) {
+        document.getElementById('changeNameError').textContent = 'Names must start with an uppercase letter and contain only letters and hyphens';
         return false;
     }
     return true;
 }
 
-
 function validatePasswordChangeForm(data) {
-    if (data.newPassword !== data.confirmNewPassword) {
-        document.getElementById('changePasswordError').textContent = 'Passwords do not match';
+    if (!passwordRegex.test(data.newPassword)) {
+        document.getElementById('changePasswordError').textContent = 'New Password must be between 6 and 64 characters long';
         return false;
     }
 
-    if (data.newPassword.length < 6) {
-        document.getElementById('changePasswordError').textContent = 'New Password must be at least 6 characters long';
+    if (data.newPassword !== data.confirmNewPassword) {
+        document.getElementById('changePasswordError').textContent = 'Passwords do not match';
         return false;
     }
     return true;
