@@ -1,5 +1,5 @@
 const { hashPassword, verifyUser, handleUserDetails } = require('../server/authUtils');
-const { connectToDatabase, findUserByEmail, registerUser, updateUserName, updateUserPassword, connection } = require('../server/db');
+const { connectToDatabase, findUserByEmail, registerUser, updateUserName, updateUserPassword, dbConnection } = require('../server/db');
 const { handleLogin } = require('../server/login');
 const { handleLogout } = require('../server/logout');
 const { handleRegistration } = require('../server/register');
@@ -8,6 +8,7 @@ const { handleRequest } = require('../server/routes');
 const { parseCookies, serveStaticFile } = require('../server/utils');
 const { sessions, captchaChallenges, generateSessionId, getSession, isValidSession, generateCaptcha, serveCaptcha } = require('../server/session');
 const { validateRegistrationData, validateNameChangeData, validatePasswordChangeData } = require('../server/validation');
+const { rateLimit, MAX_REQUESTS_PER_WINDOW, requestCounts } = require('../server/server');
 
 
 // Utility function to log test results
@@ -30,9 +31,15 @@ function generateRandomEmail() {
     return `${randomPrefix}@unittest.com`;
 }
 
-// Mock data for testing
+//Utility function to simulate a request with a given IP
+function createMockRequest(ip) {
+    return {
+        connection: { remoteAddress: ip }
+    };
+}
+//Mock data for testing
 const mockUser = {
-    email: 'test@example2.com',
+    email: 'test@unittest.com',
     password: 'password123',
     firstName: 'John',
     lastName: 'Doe'
@@ -40,6 +47,9 @@ const mockUser = {
 
 // Mock response object for testing
 const mockRes = {
+   statusCode: null,
+   headers: {},
+   data: null,
     writeHead: function (statusCode, headers) {
         this.statusCode = statusCode;
         this.headers = headers;
@@ -65,10 +75,15 @@ function testVerifyUser() {
 
 // Test for connectToDatabase function
 function testConnectToDatabase(callback) {
-    connectToDatabase((err) => {
-        logResult('testConnectToDatabase', !err);
-        callback(); 
-    });
+    if (dbConnection.state === 'disconnected') {  
+        connectToDatabase((err) => {
+            logResult('testConnectToDatabase', !err);
+            callback(); 
+        });
+    } else {
+        logResult('testConnectToDatabase', true);
+        callback();
+    }
 }
 
 // Test for findUserByEmail function
@@ -255,6 +270,43 @@ function testHandleUserDetails() {
     logResult('testHandleUserDetails', mockRes.statusCode === 200 && data.firstName === 'Pesho' && data.lastName === 'Peshev');
 }
 
+function resetRateLimit() {
+    for (const ip in requestCounts) {
+        delete requestCounts[ip];
+    }
+}
+
+function resetMockResponse() {
+    mockRes.statusCode = null;
+    mockRes.data = null;
+}
+
+
+// Test for rateLimit function
+function testRateLimit() {
+
+    resetRateLimit();
+    const ip = '192.168.0.1';
+    const req = createMockRequest(ip);
+    
+    resetMockResponse();
+
+    let result = rateLimit(req, mockRes);
+    logResult('testRateLimit - first request', result === true && mockRes.statusCode === null);
+
+    for (let i = 0; i < MAX_REQUESTS_PER_WINDOW; i++) {
+        rateLimit(req, mockRes);
+    }
+
+
+    result = rateLimit(req, mockRes);
+    logResult('testRateLimit - exceeded limit', result === false && mockRes.statusCode === 429 && mockRes.data === 'Too Many Requests');
+
+    
+    resetMockResponse();
+
+}
+
 function runTests() {
     console.log('Running server-side tests...');
     testHandleLogin();
@@ -274,6 +326,7 @@ function runTests() {
     testValidatePasswordChangeData();
     testHandleRequest();
     testHandleUserDetails();
+    testRateLimit();
    
     testConnectToDatabase(() => {
         testFindUserByEmail();
@@ -282,7 +335,7 @@ function runTests() {
         testUpdateUserPassword();
         testHashPassword();
         testVerifyUser();
-        connection.end(); 
+        dbConnection.end(); 
     });
 }
 

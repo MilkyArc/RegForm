@@ -33,6 +33,9 @@ function rateLimit(req, res) {
     return true;
 }
 
+if (require.main === module)
+{
+
 connectToDatabase((err) => {
     if (err) {
         console.error('Failed to connect to the database. Exiting.');
@@ -54,6 +57,7 @@ connectToDatabase((err) => {
     });
 });
 
+
 setInterval(() => {
     for (const ip in requestCounts) {
         if (Date.now() - requestCounts[ip].startTime > RATE_LIMIT_WINDOW_MS) {
@@ -61,3 +65,7 @@ setInterval(() => {
         }
     }
 }, RATE_LIMIT_WINDOW_MS);
+
+}
+
+module.exports = {rateLimit, MAX_REQUESTS_PER_WINDOW, requestCounts};
