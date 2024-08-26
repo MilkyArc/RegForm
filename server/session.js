@@ -20,6 +20,8 @@ function isValidSession(sessionId) {
 
 function generateCaptcha() {
     const sixDigitNumber = Math.floor(100000 + Math.random() * 900000).toString();
+    const formattedNumber = `${sixDigitNumber.slice(0, 3)} ${sixDigitNumber.slice(3)}`;
+
     const firstDigitIndex = Math.floor(Math.random() * 6);
     let secondDigitIndex;
     do {
@@ -29,7 +31,7 @@ function generateCaptcha() {
     const digit1 = parseInt(sixDigitNumber[firstDigitIndex], 10);
     const digit2 = parseInt(sixDigitNumber[secondDigitIndex], 10);
     const challenge = {
-        question: `What is the product of the ${ordinal(firstDigitIndex + 1)} and ${ordinal(secondDigitIndex + 1)} digits of ${sixDigitNumber}?`,
+        question: `What is the product of the ${ordinal(firstDigitIndex + 1)} and the ${ordinal(secondDigitIndex + 1)} digit of\n ${formattedNumber}?`,
         answer: digit1 * digit2,
     };
 
