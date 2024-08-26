@@ -41,6 +41,9 @@ function handleChangeName(req, res) {
                                 res.writeHead(500, { 'Content-Type': 'application/json' });
                                 res.end(JSON.stringify({ error: 'Database error' }));
                             } else {
+                                sessions[sessionId].firstName = data.firstName;
+                                sessions[sessionId].lastName = data.lastName;
+
                                 res.writeHead(200, { 'Content-Type': 'application/json' });
                                 res.end(JSON.stringify({ message: 'Name changed successfully' }));
                             }

@@ -48,7 +48,13 @@ function handleLogin(req, res) {
                     res.end(JSON.stringify({ error: 'Invalid email or password' }));
                 } else {
                     const newSessionId = generateSessionId();
-                    sessions[newSessionId] = { userId: user.id, email: user.email };
+                    sessions[newSessionId] = 
+                    { userId: user.id, 
+                      email: user.email,
+                      firstName: user.firstName,
+                      lastName: user.lastName 
+
+                    };
      
                     res.writeHead(200, {
                         'Content-Type': 'application/json',

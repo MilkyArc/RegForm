@@ -1,6 +1,28 @@
 document.getElementById('changeNameForm')?.addEventListener('submit', handleChangeName);
 document.getElementById('changePasswordForm')?.addEventListener('submit', handleChangePassword);
 
+document.addEventListener('DOMContentLoaded', fetchUserDetails);
+
+async function fetchUserDetails() {
+    try {
+        const response = await fetch('http://localhost:3000/user-details');
+        if (!response.ok) {
+            throw new Error('Failed to fetch user details');
+        }
+        const userDetails = await response.json();
+        if (userDetails.error) {
+            alert('Error: ' + userDetails.error);
+            window.location.href = 'login.html';
+        } else {
+            document.querySelector('h1').textContent = `Welcome to Your Dashboard, ${userDetails.firstName} ${userDetails.lastName}`;
+        }
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        alert('Could not fetch user details. Please log in again.');
+        window.location.href = 'login.html';
+    }
+}
+
 async function handleChangeName(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -22,7 +44,7 @@ async function handleChangeName(e) {
         if (result.error) {
             document.getElementById('changeNameError').textContent = result.error;
         } else {
-            alert('Name changed successfully!');
+            await fetchUserDetails();
             window.location.reload();
         }
     } catch (error) {

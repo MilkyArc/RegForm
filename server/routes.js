@@ -6,6 +6,8 @@ const { handleLogout } = require('./logout');
 const { handleChangeName, handleChangePassword } = require('./changeUserData');
 const { parseCookies } = require('./utils');
 const { getSession, isValidSession, serveCaptcha } = require('./session');
+const { handleUserDetails } = require('./authUtils');
+
 
 function handleRequest(req, res, pathName) {
     const cookies = parseCookies(req);
@@ -48,7 +50,11 @@ function handleRequest(req, res, pathName) {
         handleChangeName(req, res);
     } else if (pathName === '/change-password' && req.method === 'POST') {
         handleChangePassword(req, res);
-    } else {
+    }
+    else if (pathName === '/user-details' && req.method === 'GET') { 
+        handleUserDetails(req, res); 
+    }
+     else {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Not Found');
     }
