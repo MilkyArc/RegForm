@@ -1,5 +1,3 @@
-// auth.js
-
 document.getElementById('registerForm')?.addEventListener('submit', handleRegister);
 document.getElementById('loginForm')?.addEventListener('submit', handleLogin);
 document.getElementById('logoutButton')?.addEventListener('click', handleLogout);

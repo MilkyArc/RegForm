@@ -1,4 +1,3 @@
-// Global regex definitions
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const nameRegex = /^[A-ZА-ЯЁ][a-zA-Zа-яА-ЯёЁ-]*$/; // Must Start with uppercase, allows hyphens and Cyrillic chars
 const passwordRegex = /^.{6,64}$/; // Password length must be between 6 and 64 characters
