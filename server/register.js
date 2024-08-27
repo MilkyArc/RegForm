@@ -16,11 +16,11 @@ function handleRegistration(req, res) {
 
      
             const captchaId = parseCookies(req).captchaId;
-            console.log('Captcha ID from cookies:', captchaId); 
+          //  console.log('Captcha ID from cookies:', captchaId); 
 
         
             if (!captchaId || !captchaChallenges[captchaId]) {
-                console.error('Invalid or missing CAPTCHA ID or challenge');
+               // console.error('Invalid or missing CAPTCHA ID or challenge');
                 res.writeHead(400, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'CAPTCHA failed' }));
                 return;

@@ -1,12 +1,12 @@
 const { hashPassword, verifyUser, handleUserDetails } = require('../server/authUtils');
-const { connectToDatabase, findUserByEmail, registerUser, updateUserName, updateUserPassword, dbConnection } = require('../server/db');
+const { connectToDatabase, findUserByEmail, registerUser, updateUserName, updateUserPassword, disconnectDatabase } = require('../server/db');
 const { handleLogin } = require('../server/login');
 const { handleLogout } = require('../server/logout');
 const { handleRegistration } = require('../server/register');
 const { handleChangeName, handleChangePassword } = require('../server/changeUserData');
 const { handleRequest } = require('../server/routes');
 const { parseCookies, serveStaticFile } = require('../server/utils');
-const { sessions, captchaChallenges, generateSessionId, getSession, isValidSession, generateCaptcha, serveCaptcha } = require('../server/session');
+const { sessions, generateSessionId, getSession, isValidSession, generateCaptcha, serveCaptcha } = require('../server/session');
 const { validateRegistrationData, validateNameChangeData, validatePasswordChangeData } = require('../server/validation');
 const { rateLimit, MAX_REQUESTS_PER_WINDOW, requestCounts } = require('../server/server');
 
@@ -34,10 +34,17 @@ function generateRandomEmail() {
 //Utility function to simulate a request with a given IP
 function createMockRequest(ip) {
     return {
-        connection: { remoteAddress: ip }
+        connection: { remoteAddress: ip },
+        headers: {},
+        method: 'GET',
+        on: function (event, callback) {
+            if (event === 'data') callback(JSON.stringify(mockUser));
+            if (event === 'end') callback();
+        }
     };
 }
-//Mock data for testing
+
+// Mock data for testing
 const mockUser = {
     email: 'test@unittest.persist',
     password: 'password123',
@@ -59,6 +66,13 @@ const mockRes = {
     }
 };
 
+// Reset mock response to clear previous test state
+function resetMockResponse() {
+    mockRes.statusCode = null;
+    mockRes.headers = {};
+    mockRes.data = null;
+}
+
 // Test for hashPassword function
 function testHashPassword() {
     hashPassword(mockUser.password, (err, hashedPassword) => {
@@ -75,14 +89,16 @@ function testVerifyUser() {
 
 // Test for connectToDatabase function
 function testConnectToDatabase(callback) {
-    if (dbConnection.state === 'disconnected') {  
-        connectToDatabase((err) => {
-            logResult('testConnectToDatabase', !err);
-            callback(); 
-        });
-    } else {
+    const connection = require('../server/db').getConnection();
+    if (connection && connection.state !== 'disconnected') {
+        console.log('Already connected to the database.');
         logResult('testConnectToDatabase', true);
         callback();
+    } else {
+        connectToDatabase((err) => {
+            logResult('testConnectToDatabase', !err);
+            callback();
+        });
     }
 }
 
@@ -118,7 +134,14 @@ function testUpdateUserPassword() {
 
 // Test for handleLogin function
 function testHandleLogin() {
-    const mockReq = { on: function(event, callback) { if(event === 'end') callback(); }, body: JSON.stringify(mockUser) };
+    const mockReq = {
+        method: 'POST',
+        headers: {},
+        on: function (event, callback) {
+            if (event === 'data') callback(JSON.stringify(mockUser));
+            if (event === 'end') callback();
+        }
+    };
     handleLogin(mockReq, mockRes);
     logResult('testHandleLogin', mockRes.statusCode === 200 || mockRes.statusCode === 401 || mockRes.statusCode === 400);
 }
@@ -133,23 +156,42 @@ function testHandleLogout() {
 
 // Test for handleRegistration function
 function testHandleRegistration() {
-    const mockReq = { on: function(event, callback) { if(event === 'end') callback(); }, body: JSON.stringify(mockUser) };
+    const mockReq = {
+        method: 'POST',
+        headers: {},
+        on: function (event, callback) {
+            if (event === 'data') callback(JSON.stringify(mockUser));
+            if (event === 'end') callback();
+        }
+    };
     handleRegistration(mockReq, mockRes);
     logResult('testHandleRegistration', mockRes.statusCode === 200 || mockRes.statusCode === 400);
 }
 
 // Test for handleChangeName function
 function testHandleChangeName() {
-    sessions['mockSessionId'] = { email: mockUser.email }; 
-    const mockReq = { headers: { cookie: 'sessionId=mockSessionId' }, on: function(event, callback) { if(event === 'end') callback(); }, body: JSON.stringify({ firstName: 'Jane', lastName: 'Smith', passwordForNameChange: 'password123' }) };
+    sessions['mockSessionId'] = { email: mockUser.email };
+    const mockReq = {
+        headers: { cookie: 'sessionId=mockSessionId' },
+        on: function (event, callback) {
+            if (event === 'data') callback(JSON.stringify({ firstName: 'Jane', lastName: 'Smith', passwordForNameChange: 'password123' }));
+            if (event === 'end') callback();
+        }
+    };
     handleChangeName(mockReq, mockRes);
     logResult('testHandleChangeName', mockRes.statusCode === 200 || mockRes.statusCode === 400);
 }
 
 // Test for handleChangePassword function
 function testHandleChangePassword() {
-    sessions['mockSessionId'] = { email: mockUser.email }; 
-    const mockReq = { headers: { cookie: 'sessionId=mockSessionId' }, on: function(event, callback) { if(event === 'end') callback(); }, body: JSON.stringify({ currentPassword: 'password123', newPassword: 'newPassword123', confirmNewPassword: 'newPassword123' }) };
+    sessions['mockSessionId'] = { email: mockUser.email };
+    const mockReq = {
+        headers: { cookie: 'sessionId=mockSessionId' },
+        on: function (event, callback) {
+            if (event === 'data') callback(JSON.stringify({ currentPassword: 'password123', newPassword: 'newPassword123', confirmNewPassword: 'newPassword123' }));
+            if (event === 'end') callback();
+        }
+    };
     handleChangePassword(mockReq, mockRes);
     logResult('testHandleChangePassword', mockRes.statusCode === 200 || mockRes.statusCode === 400);
 }
@@ -209,7 +251,7 @@ function testValidateRegistrationData() {
         password: 'validPass123',
         confirmPassword: 'validPass123'
     };
-    
+
     const invalidUser = {
         email: 'invalid',
         firstName: 'J',
@@ -246,15 +288,13 @@ function testValidatePasswordChangeData() {
     });
 }
 
-
 function testHandleRequest() {
     const mockReq = { method: 'GET', url: '/', headers: {} }; // Ensure headers are defined
     handleRequest(mockReq, mockRes, '/');
     logResult('testHandleRequest', mockRes.statusCode === 200 || mockRes.statusCode === 302 || mockRes.statusCode === 404);
 }
 
-
-//Test for handleUserDetailss function 
+// Test for handleUserDetails function
 function testHandleUserDetails() {
     const sessionId = generateSessionId();
     sessions[sessionId] = { firstName: 'Pesho', lastName: 'Peshev', email: 'test@unittest.com' };
@@ -288,7 +328,7 @@ function testRateLimit() {
     resetRateLimit();
     const ip = '192.168.0.1';
     const req = createMockRequest(ip);
-    
+
     resetMockResponse();
 
     let result = rateLimit(req, mockRes);
@@ -298,16 +338,14 @@ function testRateLimit() {
         rateLimit(req, mockRes);
     }
 
-
     result = rateLimit(req, mockRes);
     logResult('testRateLimit - exceeded limit', result === false && mockRes.statusCode === 429 && mockRes.data === 'Too Many Requests');
 
-    
     resetMockResponse();
-
 }
 
-function runTests() {
+
+async function runTests() {
     console.log('Running server-side tests...');
     testHandleLogin();
     testHandleLogout();
@@ -327,17 +365,21 @@ function runTests() {
     testHandleRequest();
     testHandleUserDetails();
     testRateLimit();
-   
-    testConnectToDatabase(() => {
-        testFindUserByEmail();
-        testRegisterUser();
-        testUpdateUserName();
-        testUpdateUserPassword();
-        testHashPassword();
-        testVerifyUser();
-        dbConnection.end(); 
+
+    await new Promise((resolve) => testConnectToDatabase(resolve)); 
+    testFindUserByEmail();
+    testRegisterUser();
+    testUpdateUserName();
+    testUpdateUserPassword();
+    testHashPassword();
+    testVerifyUser();
+
+    disconnectDatabase(() => {
+        console.log('Disconnected from the database.');
+        console.log('All tests completed and database disconnected.');
     });
 }
+
 
 runTests();
 
